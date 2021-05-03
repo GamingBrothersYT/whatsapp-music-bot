@@ -16,7 +16,7 @@ const client = new Client({});
 const downloadStatus: DownloadStatus = { showProgress: false };
 const downloadedMusics: string[] = [];
 const downloadPath = path.resolve(__dirname, '..', 'downloads');
-const ffmpegPath = '/usr/bin/ffmpeg'; // default linux
+const ffmpegPath = 'C:\\FFmpeg\\bin\\ffmpeg.exe'; // default linux
 // const ffmpegPath = 'C:\ffmpeg\bin\ffmpeg.exe'; //default windows
 
 const downloader = new DownloadYTFile({
@@ -55,6 +55,14 @@ client.on('message_create', async message => {
     return message.reply(text.MESSAGE_NO_DOWNLOADED_MUSICS);
   }
 
+  if (message.body.startsWith(text.COMMAND_WRONG_PLAY_1)) {
+    return message.reply(text.MESSAGE_RIGHT_PLAY);
+  }
+
+  if (message.body.startsWith(text.COMMAND_HELP)) {
+    return message.reply(text.MESSAGE_HELP);
+  }
+
   if (message.body.startsWith(text.COMMAND_PLAY)) {
     const searchOptions = {
       query: message.body.split(text.COMMAND_PLAY)[1],
@@ -72,6 +80,7 @@ client.on('message_create', async message => {
       const { videoId, title, duration } = videos[0];
 
       if (downloadedMusics.includes(`${videoId}.mp3`)) {
+        console.log(text.MESSAGE_SENT);
         const media = MessageMedia.fromFilePath(
           path.resolve(downloadPath, `${videoId}.mp3`),
         );
@@ -79,7 +88,7 @@ client.on('message_create', async message => {
         return message.reply(media);
       }
 
-      if (duration.seconds >= 900) {
+      if (duration.seconds >= 999999) {
         return message.reply(text.MESSAGE_TOO_LARGE);
       }
 
@@ -117,6 +126,8 @@ client.on('message_create', async message => {
         path.resolve(downloadPath, `${videoId}.mp3`),
       );
       downloadedMusics.push(videoId);
+      console.log(text.MESSAGE_DOWNLOADED);
+      console.log(text.MESSAGE_SENT);
       return message.reply(media);
     } catch (error) {
       console.log(error);
